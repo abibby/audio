@@ -3,6 +3,7 @@ package audio
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 
@@ -34,7 +35,7 @@ func Read() (float64, error) {
 }
 
 func FloatArg(index int) (float64, error) {
-	if len(os.Args)-1 < index {
+	if len(os.Args) <= index+1 {
 		return 0, fmt.Errorf("no arg at %d", index)
 	}
 	value, err := strconv.ParseFloat(os.Args[index+1], 64)
@@ -42,4 +43,16 @@ func FloatArg(index int) (float64, error) {
 		return 0, err
 	}
 	return value, nil
+}
+
+func Transform(f func(value float64) float64) {
+	for {
+		value, err := Read()
+		if err != nil {
+			if err == io.EOF {
+				return
+			}
+		}
+		Write(f(value))
+	}
 }

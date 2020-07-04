@@ -36,8 +36,9 @@ func main() {
 		audio.Write(value)
 		// i = (i + 1) % (sampleRate * uint(hz))
 		i++
-		if (lastValue > 0 && value <= 0) || (lastValue < 0 && value >= 0) {
+		if lastValue > 0 && value <= 0 {
 			hz = nextHz
+			i = 0
 		}
 		lastValue = value
 	}

@@ -1,4 +1,4 @@
-all: bin/sin bin/play bin/mul bin/add
+all: bin/sin bin/play bin/mul bin/add bin/gate
 
 bin/sin: sin/*.go *.go
 	go build -o bin/sin ./sin
@@ -11,6 +11,9 @@ bin/mul: mul/*.go *.go
 
 bin/add: add/*.go *.go
 	go build -o bin/add ./add
+
+bin/gate: gate/*.go *.go
+	go build -o bin/gate ./gate
 
 clean:
 	rm -rf bin/*
