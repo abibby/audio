@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"io"
 	"log"
+	"os"
 	"time"
 
 	"github.com/abibby/audio"
@@ -42,11 +45,16 @@ func main() {
 	speaker.Init(audio.SampleRate, audio.SampleRate.N(time.Second/10))
 	var value float64
 	var err error
+	in := bufio.NewReader(os.Stdin)
+
+	done := make(chan struct{})
 	speaker.Play(beep.StreamerFunc(func(samples [][2]float64) (n int, ok bool) {
 
 		for i := range samples {
-			value, err = audio.Read()
-			if err != nil {
+			value, err = audio.Read(in)
+			if err == io.EOF {
+				done <- struct{}{}
+			} else if err != nil {
 				log.Print(err)
 			}
 			samples[i][0] = value
@@ -54,5 +62,5 @@ func main() {
 		}
 		return len(samples), true
 	}))
-	select {}
+	<-done
 }

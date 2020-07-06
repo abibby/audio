@@ -12,18 +12,13 @@ import (
 
 const SampleRate beep.SampleRate = 44100
 
-var stdinBuffer *bufio.Reader
-
-func Write(value float64) error {
-	_, err := fmt.Printf("%f\n", value)
+func Write(out io.Writer, value float64) error {
+	_, err := fmt.Fprintf(out, "%f\n", value)
 	return err
 }
 
-func Read() (float64, error) {
-	if stdinBuffer == nil {
-		stdinBuffer = bufio.NewReader(os.Stdin)
-	}
-	s, err := stdinBuffer.ReadString('\n')
+func Read(in *bufio.Reader) (float64, error) {
+	s, err := in.ReadString('\n')
 	if err != nil {
 		return 0, err
 	}
@@ -45,14 +40,14 @@ func FloatArg(index int) (float64, error) {
 	return value, nil
 }
 
-func Transform(f func(value float64) float64) {
+func Transform(in *bufio.Reader, out io.Writer, f func(value float64) float64) {
 	for {
-		value, err := Read()
+		value, err := Read(in)
 		if err != nil {
 			if err == io.EOF {
 				return
 			}
 		}
-		Write(f(value))
+		Write(out, f(value))
 	}
 }

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"io"
+	"bufio"
 	"log"
+	"os"
 
 	"github.com/abibby/audio"
 )
@@ -12,13 +13,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for {
-		value, err := audio.Read()
-		if err != nil {
-			if err == io.EOF {
-				return
-			}
-		}
-		audio.Write(value * f)
-	}
+
+	audio.Transform(
+		bufio.NewReader(os.Stdin),
+		os.Stdout,
+		func(value float64) float64 {
+			return value * f
+		},
+	)
 }
